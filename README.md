@@ -1,6 +1,6 @@
 # Metric Pipeline
 
-A wireframe of a standard metric pipeline.
+A wireframe of a standard metrics collection pipeline.
 
 The pipeline consists of four (4) elements:
 1. Metric publisher - Telegraf
