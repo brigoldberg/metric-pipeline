@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+
+  telegraf:
+    image: telegraf:1.29.2
+    container_name: telegraf
+    hostname: telegraf
+    volumes: 
+      - ./config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+    depends_on:
+      - redpanda
+
+  redpanda:
+    container_name: redpanda
+    hostname: redpanda
+    image: docker.redpanda.com/redpandadata/redpanda:v23.3.2
+    command:
+      -   redpanda start --smp 1 --overprovisioned
+      - --kafka-addr 0.0.0.0:9092
+      - --advertise-kafka-addr redpanda:9092
+      - --rpc-addr redpanda:33145 --advertise-rpc-addr redpanda:33145
+      - --mode dev-container
+    volumes:
+      - ./config/redpanda/bootstrap.yaml:/etc/redpanda/.bootstrap.yaml
+
+  clickhouse:
+    container_name: clickhouse
+    hostname: clickhouse
+    image: clickhouse/clickhouse-server:latest
+    volumes:
+      - ./config/clickhouse/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+      - ./config/clickhouse:/scripts
+    ports:
+      - 9000:9000
+
+  metric-router:
+    image: metric-router:1.1
+    container_name: metric-router
+    hostname: metric-router
+    volumes:
+      - ./code/asyncio-router.py:/app/metric-router.py
+    depends_on:
+      - redpanda
+
+networks:
+  default:
+    name: metric-pipe
