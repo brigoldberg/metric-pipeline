@@ -10,9 +10,14 @@ import logging
 import msgpack
 from aiokafka import AIOKafkaConsumer
 from clickhouse_driver import Client
+from prometheus_client import Counter, start_http_server
 
 CH_PORT = 9000
 KAFKA_PORT = 9092
+
+kafka_reads = Counter('kafka_reads', 'Reads from Kafka topic')
+msgs_decoded = Counter('messages_upacked', 'Messages decoded from msgpack')
+db_inserts = Counter('db_inserts', 'Database inserts')
 
 def cli_args():
     parser = argparse.ArgumentParser(description='Metric Router')
@@ -44,6 +49,7 @@ async def kafka_consumer(msg_queue, args):
     try:
         async for msg in consumer:
             logger.debug(f"Putting msg in queue: {msg}")
+            kafka_reads.inc()
             await msg_queue.put(msg)
     finally:
         await consumer.stop()
@@ -54,6 +60,7 @@ async def queue_reader(msg_queue, args):
     while True:
         packed_msg = await msg_queue.get()
         unpacked_msg = unpack_msg(packed_msg)
+        msgs_decoded.inc()
         insert_db(ch_client, unpacked_msg)
 
 def unpack_msg(msg):
@@ -73,6 +80,7 @@ def insert_db(ch_client, metric_line):
     logger.debug(f'SQL CMD: {sql_cmd}')
 
     ch_client.execute(sql_cmd)  
+    db_inserts.inc()
 
 async def main(args):
 
@@ -88,7 +96,7 @@ if __name__ == '__main__':
 
     args = cli_args()
     logger = get_logger(args)
-    print(args)
+    start_http_server(8000)
 
     module_logger = logging.getLogger('aiokafka')
     module_logger.setLevel(logging.WARNING)

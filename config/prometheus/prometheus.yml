@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'metric-router'
+    static_configs:
+      - targets:
+          - metric-router:8000

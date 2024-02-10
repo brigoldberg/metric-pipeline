@@ -1,14 +1,19 @@
 version: '3.8'
 services:
 
-  telegraf:
+  telegraf-1: &telegraf 
     image: telegraf:1.29.2
-    container_name: telegraf
-    hostname: telegraf
+    container_name: telegraf-1
+    hostname: telegraf-1
     volumes: 
       - ./config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
     depends_on:
       - redpanda
+
+  telegraf-2: 
+    <<: *telegraf
+    container_name: telegraf-2
+    hostname: telegraf-2
 
   redpanda:
     container_name: redpanda
@@ -41,6 +46,18 @@ services:
       - ./code/asyncio-router.py:/app/metric-router.py
     depends_on:
       - redpanda
+    ports:
+      - 8000:8000
+
+  prometheus:
+    image: prom/prometheus:v2.45.3 
+    container_name: prometheus
+    hostname: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./config/prometheus:/etc/prometheus
+
 
 networks:
   default:
