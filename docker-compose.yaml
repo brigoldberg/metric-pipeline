@@ -21,12 +21,14 @@ services:
     image: docker.redpanda.com/redpandadata/redpanda:v23.3.2
     command:
       -   redpanda start --smp 1 --overprovisioned
-      - --kafka-addr 0.0.0.0:9092
-      - --advertise-kafka-addr redpanda:9092
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
       - --rpc-addr redpanda:33145 --advertise-rpc-addr redpanda:33145
       - --mode dev-container
     volumes:
       - ./config/redpanda/bootstrap.yaml:/etc/redpanda/.bootstrap.yaml
+    ports:
+      - 19092:19092
 
   clickhouse:
     container_name: clickhouse
@@ -43,11 +45,12 @@ services:
     container_name: metric-router
     hostname: metric-router
     volumes:
-      - ./code/asyncio-router.py:/app/metric-router.py
+      - ./code:/app
     depends_on:
       - redpanda
     ports:
       - 8000:8000
+    command: ["-v"]
 
   prometheus:
     image: prom/prometheus:v2.45.3 
