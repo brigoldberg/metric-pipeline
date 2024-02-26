@@ -9,8 +9,8 @@ logger = logging.getLogger()
 module_logger = logging.getLogger('aiokafka')
 module_logger.setLevel(logging.WARNING)
 
-kafka_reads = Counter('kafka_reads', 'Reads from Kafka topic')
-kafka_read_bytes = Counter('kafka_read_bytes', 'Sum bytes read from Kafka topics')
+kafka_reads = Counter('metric_rtr_kafka_reads', 'Reads from Kafka topic')
+kafka_read_bytes = Counter('metric_rtr_kafka_read_bytes', 'Sum bytes read from Kafka topics')
 
 async def metric_consumer(msg_queue, args):
     """

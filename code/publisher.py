@@ -7,14 +7,15 @@ import msgpack
 import time
 from clickhouse_driver import Client
 from dataclasses import dataclass
-from prometheus_client import Counter
+from prometheus_client import Counter, Gauge
 
 logger = logging.getLogger()
 
 CH_PORT = 9000
 
-msg_decoded = Counter('msg_decoded', 'MsgPack messages decoded')
-db_inserts = Counter('db_inserts', 'Database inserts')
+msg_decoded = Counter('metric_rtr_msg_decoded', 'MsgPack messages decoded')
+db_inserts = Counter('metric_rtr_db_inserts', 'Database inserts')
+bucket_size = Gauge('metric_rtr_bucket_size', 'Metric bucket size', ['metric_name'])
 
 metrics = {}
 
@@ -27,6 +28,8 @@ class Metric:
 async def metric_writer(msg_queue, args):
 
     ch_client = Client(host=args.ch_host, port=CH_PORT)    
+
+    bucket_check_counter = 0
 
     while True:
 
@@ -41,12 +44,19 @@ async def metric_writer(msg_queue, args):
             metrics[msg_name].metric_rows.append(msg)
 
         # Cycle thru all metrics objects and process if length > 10 or update time > 1 min.
-        for k in metrics.keys():
-            time_now = time.time()
-            if (time_now - metrics[k].update_time) > 60:
-                write_metrics(metrics[k], ch_client)
-            elif len(metrics[k].metric_rows) > 10:
-                write_metrics(metrics[k], ch_client)
+        if bucket_check_counter % 100 == 0:
+
+            for k in metrics.keys():
+
+                time_now = time.time()
+                bucket_size.labels(k).set(len(metrics[k].metric_rows))
+                
+                if (time_now - metrics[k].update_time) > 60:
+                    write_metrics(metrics[k], ch_client)
+                elif len(metrics[k].metric_rows) > 10:
+                    write_metrics(metrics[k], ch_client)
+
+        bucket_check_counter += 1
 
 def write_metrics(metric, ch_client):
     # Clear rows and reset timestamp
