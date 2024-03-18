@@ -12,25 +12,20 @@ module_logger.setLevel(logging.WARNING)
 kafka_reads = Counter('metric_rtr_kafka_reads', 'Reads from Kafka topic')
 kafka_read_bytes = Counter('metric_rtr_kafka_read_bytes', 'Sum bytes read from Kafka topics')
 
-async def metric_consumer(msg_queue, args):
+async def metric_consumer(msg_queue, config):
     """
     Read data from Kafka topic and add to queue.
     """
     consumer = AIOKafkaConsumer(
-        args.kafka_topic,
-        bootstrap_servers = args.bootstrap_server,
-        group_id = args.group_id
+        config['consumer'].get('kafka_topic'),
+        bootstrap_servers = config['consumer'].get('bootstrap_servers'),
+        group_id = config['consumer'].get('group_id'),
     )
 
     await consumer.start()
 
-    kafka_bytes_read = 0
-
     try:
         async for msg in consumer:
-
-            # logger.debug(f"Putting msg in queue: {msg}")
-
             kafka_reads.inc()
             kafka_read_bytes.inc(msg.serialized_value_size)
 

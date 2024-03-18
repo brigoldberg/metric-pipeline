@@ -7,14 +7,14 @@ scrape_configs:
       - targets:
           - metric-router:8000
 
-  - job_name: redpanda-public
-    static_configs:
-      - targets:
-        - redpanda:9644
-    metrics_path: /public_metrics
+  # - job_name: redpanda-public
+  #   static_configs:
+  #     - targets:
+  #       - redpanda:9644
+  #   metrics_path: /public_metrics
 
-  - job_name: redpanda-internal
-    static_configs:
-    - targets:
-        - redpanda:9644
-    metrics_path: /metrics
+  # - job_name: redpanda-internal
+  #   static_configs:
+  #   - targets:
+  #       - redpanda:9644
+  #   metrics_path: /metrics
