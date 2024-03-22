@@ -2,6 +2,7 @@
 
 import json
 import logging
+import threading
 import time
 from clickhouse_driver import Client
 from prometheus_client import Counter
@@ -14,8 +15,11 @@ measurements_pruned = Counter('metric_rtr_measurements_pruned', 'Pruned stale me
 
 logger = logging.getLogger()
 
+list_lock = threading.Lock()
 
 def flush_to_db(ch_client, metric_bucket):
+
+    list_lock.acquire()
 
     columns = []
     
@@ -31,6 +35,8 @@ def flush_to_db(ch_client, metric_bucket):
 
     metric_bucket.metrics.clear()
     metric_bucket.update_time = time.time()
+
+    list_lock.release()
     
 
 def metric_writer(metric_bucket, args, config):
