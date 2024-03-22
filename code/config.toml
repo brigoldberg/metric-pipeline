@@ -1,0 +1,12 @@
+[consumer]
+bootstrap_servers = "redpanda:9092"
+group_id = "metrics"
+kafka_topic = "telegraf"
+
+[writer]
+db_server = "clickhouse"
+db_server_port = 9000
+max_bucket_size = 100
+bucket_time_trigger = 10
+max_bucket_age = 60
+writer_sleep = 3
