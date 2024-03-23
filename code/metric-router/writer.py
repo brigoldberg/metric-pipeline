@@ -5,13 +5,14 @@ import logging
 import threading
 import time
 from clickhouse_driver import Client
-from prometheus_client import Counter
+from prometheus_client import Counter, Gauge
 
 db_insert = Counter('metric_rtr_db_inserts', 'Database inserts')
 db_insert_fail = Counter('metric_rtr_db_insert_fail', 'Failed Database inserts')
 flush_on_size = Counter('metric_rtr_flush_on_size', 'Flush on bucket size')
 flush_on_time = Counter('metric_rtr_flush_on_time', 'Flush on bucket time')
 measurements_pruned = Counter('metric_rtr_measurements_pruned', 'Pruned stale measurements')
+metric_insert_size = Gauge('metric_rtr_insert_size', 'Row count of db insert')
 
 logger = logging.getLogger()
 
@@ -33,6 +34,7 @@ def flush_to_db(ch_client, metric_bucket):
     except:
         db_insert_fail.inc()
 
+    metric_insert_size.set(len(metric_bucket.metrics))
     metric_bucket.metrics.clear()
     metric_bucket.update_time = time.time()
 
