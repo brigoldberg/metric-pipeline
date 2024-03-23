@@ -21,7 +21,6 @@ clickhouse-client -mn << ESQL
     ) ENGINE MergeTree ORDER BY ts;
 
     CREATE TABLE IF NOT EXISTS system (
-        -- ts datetime('America/New_York'),
         ts UInt64,
         host LowCardinality(String),
         load1 Float32,

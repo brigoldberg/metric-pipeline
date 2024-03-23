@@ -15,6 +15,11 @@ services:
     container_name: telegraf-2
     hostname: telegraf-2
 
+  telegraf-3: 
+    <<: *telegraf
+    container_name: telegraf-3
+    hostname: telegraf-3
+
   redpanda:
     container_name: redpanda
     hostname: redpanda
@@ -40,16 +45,27 @@ services:
     ports:
       - 9000:9000
 
-  metric-router:
+  metric-router-1:
     image: metric-router:1.1
-    container_name: metric-router
-    hostname: metric-router
+    container_name: metric-router-1
+    hostname: metric-router-1
     volumes:
       - ./code/metric-router/:/app
     depends_on:
       - redpanda
     ports:
-      - 8000:8000
+      - 8001:8000
+
+  metric-router-2:
+    image: metric-router:1.1
+    container_name: metric-router-2
+    hostname: metric-router-2
+    volumes:
+      - ./code/metric-router/:/app
+    depends_on:
+      - redpanda
+    ports:
+      - 8002:8000
 
   prometheus:
     image: prom/prometheus:v2.45.3 

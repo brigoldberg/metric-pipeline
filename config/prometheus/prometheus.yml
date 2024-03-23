@@ -5,7 +5,8 @@ scrape_configs:
   - job_name: 'metric-router'
     static_configs:
       - targets:
-          - metric-router:8000
+          - metric-router-1:8000
+          - metric-router-2:8000
 
   - job_name: redpanda-public
     static_configs:

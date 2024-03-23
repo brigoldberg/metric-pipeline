@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 6,
+  "id": 7,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -104,6 +104,7 @@
         "y": 1
       },
       "id": 1,
+      "interval": "5s",
       "options": {
         "legend": {
           "calcs": [
@@ -128,11 +129,11 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "rate(metric_rtr_kafka_read_bytes_total[10s])",
+          "expr": "sum by (instance) (rate(metric_rtr_kafka_read_bytes_total[10s]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "Data Rate",
+          "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -211,6 +212,7 @@
         "y": 1
       },
       "id": 3,
+      "interval": "5s",
       "options": {
         "legend": {
           "calcs": [
@@ -235,11 +237,11 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "rate(metric_rtr_kafka_reads_total[10s])",
+          "expr": "sum by (instance) (rate(metric_rtr_kafka_reads_total[10s]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -330,6 +332,7 @@
         "y": 10
       },
       "id": 2,
+      "interval": "5s",
       "options": {
         "legend": {
           "calcs": [
@@ -439,6 +442,7 @@
         "y": 10
       },
       "id": 8,
+      "interval": "5s",
       "options": {
         "legend": {
           "calcs": [
@@ -462,12 +466,12 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "disableTextWrap": false,
-          "editorMode": "code",
-          "expr": "rate(metric_rtr_msg_decoded_total[10s])",
+          "editorMode": "builder",
+          "expr": "sum by(instance) (rate(metric_rtr_msg_decoded_total[10s]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "Msg Unpacked",
+          "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -852,6 +856,7 @@
         "y": 23
       },
       "id": 7,
+      "interval": "5s",
       "options": {
         "legend": {
           "calcs": [
@@ -876,11 +881,11 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "rate(metric_rtr_db_inserts_total[10s])",
+          "expr": "sum by (instance) (rate(metric_rtr_db_inserts_total[10s]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "DB Inserts",
+          "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -959,6 +964,7 @@
         "y": 23
       },
       "id": 13,
+      "interval": "5s",
       "options": {
         "legend": {
           "calcs": [
@@ -1067,6 +1073,7 @@
         "y": 31
       },
       "id": 14,
+      "interval": "5s",
       "options": {
         "legend": {
           "calcs": [
