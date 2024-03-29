@@ -5,7 +5,7 @@ A wireframe of a standard metrics collection pipeline.
 The pipeline consists of four (4) elements:
 1. Metric publisher - Telegraf
 2. Messagebus - Redpanda
-3. Metric router - Python script
+3. Metric router - Python application
 4. Data store - ClickHouse
 
 # Components
